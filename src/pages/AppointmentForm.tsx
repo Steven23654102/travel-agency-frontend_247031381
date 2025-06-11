@@ -1,12 +1,20 @@
-// src/pages/AppointmentForm.tsx
 import React, { useState } from "react";
 import { createAppointment } from "../api/appointments";
+import "../App.css"; 
 
 export default function AppointmentForm() {
   const [formData, setFormData] = useState({
     name_en: "",
+    name_zh: "",
+    gender: "",
+    dob: "",
+    address: "",
+    hkid: "",
+    phone: "",
     email: "",
-    // 其他欄位...
+    date: "",
+    time: "",
+    location: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,21 +28,112 @@ export default function AppointmentForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="English Name"
-        value={formData.name_en}
-        onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={formData.email}
-        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-      />
-      {/* 其他欄位… */}
-      <button type="submit">提交預約</button>
+    <form className="form-container" onSubmit={handleSubmit}>
+      <div className="form-group">
+        <label>English Name</label>
+        <input
+          type="text"
+          value={formData.name_en}
+          onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Chinese Name</label>
+        <input
+          type="text"
+          value={formData.name_zh}
+          onChange={(e) => setFormData({ ...formData, name_zh: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Gender</label>
+        <select
+          value={formData.gender}
+          onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+        >
+          <option value="">Select Gender</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select>
+      </div>
+
+      <div className="form-group">
+        <label>Date of Birth</label>
+        <input
+          type="date"
+          value={formData.dob}
+          onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Address</label>
+        <input
+          type="text"
+          value={formData.address}
+          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>HKID</label>
+        <input
+          type="text"
+          value={formData.hkid}
+          onChange={(e) => setFormData({ ...formData, hkid: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Phone</label>
+        <input
+          type="tel"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Email</label>
+        <input
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Appointment Date</label>
+        <input
+          type="date"
+          value={formData.date}
+          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Appointment Time</label>
+        <input
+          type="time"
+          value={formData.time}
+          onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <label>Location</label>
+        <input
+          type="text"
+          value={formData.location}
+          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+        />
+      </div>
+
+      <div className="form-group">
+        <button type="submit">提交預約</button>
+      </div>
     </form>
   );
 }
