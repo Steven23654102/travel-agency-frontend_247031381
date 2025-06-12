@@ -28,3 +28,10 @@ export async function createAppointment(data: Appointment) {
 
   return await response.json();
 }
+
+export async function getAppointments() {
+  const res = await fetch("http://localhost:3000/api/appointments");
+  if (!res.ok) throw new Error("Failed to fetch appointments");
+  return res.json();
+}
+

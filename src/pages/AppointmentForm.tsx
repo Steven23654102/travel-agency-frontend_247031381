@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { createAppointment } from "../api/appointments";
 import "../App.css"; 
+import { useNavigate } from "react-router-dom";
+
 
 export default function AppointmentForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name_en: "",
     name_zh: "",
@@ -17,15 +20,18 @@ export default function AppointmentForm() {
     location: "",
   });
 
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await createAppointment(formData);
-      alert("預約成功：" + JSON.stringify(res));
-    } catch (err) {
-      alert("預約失敗");
-    }
+  e.preventDefault();
+  try {
+    const res = await createAppointment(formData);
+    alert("預約成功：" + JSON.stringify(res));
+    navigate("/appointments");
+  } catch (err) {
+    alert("預約失敗");
+  }
   };
+
 
   return (
     <form className="form-container" onSubmit={handleSubmit}>
