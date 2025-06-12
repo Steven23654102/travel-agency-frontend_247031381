@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getHotelById } from "../api/hotels";
-
-interface Hotel {
-  id: number;
-  name: string;
-  city: string;
-  description: string;
-  image?: string;
-}
+import { getHotelById, Hotel } from "../api/hotels";
 
 export default function HotelDetail() {
   const { id } = useParams();
   const [hotel, setHotel] = useState<Hotel | null>(null);
 
   useEffect(() => {
-    if (id) getHotelById(Number(id)).then(setHotel);
+    if (id) {
+      getHotelById(Number(id)).then(setHotel);
+    }
   }, [id]);
 
   if (!hotel) return <p>載入中...</p>;

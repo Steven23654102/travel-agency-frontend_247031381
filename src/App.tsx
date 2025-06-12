@@ -5,6 +5,9 @@ import AppointmentList from "./pages/AppointmentList";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Hotels from "./pages/Hotels";
+import HotelDetail from "./pages/HotelDetail";
+import HotelCreate from "./pages/HotelCreate";
 
 function App() {
   return (
@@ -15,6 +18,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/hotels" element={<Hotels />} />
+        <Route path="/hotels/:id" element={<HotelDetail />} />
+        <Route path="/hotels/new" element={<HotelCreate />} />
       </Routes>
     </Router>
   );

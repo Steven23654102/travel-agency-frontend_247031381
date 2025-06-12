@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getHotels } from "../api/hotels";
-
-interface Hotel {
-  id: number;
-  name: string;
-  city: string;
-  description: string;
-}
+import { getHotels, Hotel } from "../api/hotels";
 
 export default function Hotels() {
   const [hotels, setHotels] = useState<Hotel[]>([]);
