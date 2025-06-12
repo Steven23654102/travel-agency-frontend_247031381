@@ -20,9 +20,26 @@ export default function AppointmentForm() {
     location: "",
   });
 
+const [errors, setErrors] = useState<{ phone?: string; hkid?: string }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+
+  const newErrors: { phone?: string; hkid?: string } = {};
+
+  if (!/^\d{8}$/.test(formData.phone)) {
+    newErrors.phone = "電話必須是 8 位數字";
+  }
+
+  if (!/^[A-Z]\d{6}\(\d\)$/.test(formData.hkid)) {
+    newErrors.hkid = "請輸入有效的 HKID 格式（如 A123456(7)）";
+  }
+
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+
   try {
     const res = await createAppointment(formData);
     alert("預約成功：" + JSON.stringify(res));
@@ -30,7 +47,8 @@ export default function AppointmentForm() {
   } catch (err) {
     alert("預約失敗");
   }
-  };
+};
+
 
 
   return (
@@ -90,7 +108,9 @@ export default function AppointmentForm() {
           value={formData.hkid}
           onChange={(e) => setFormData({ ...formData, hkid: e.target.value })}
         />
+        {errors.hkid && <p style={{ color: "red" }}>{errors.hkid}</p>}
       </div>
+
 
       <div className="form-group">
         <label>Phone</label>
@@ -99,7 +119,9 @@ export default function AppointmentForm() {
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
         />
+        {errors.phone && <p style={{ color: "red" }}>{errors.phone}</p>}
       </div>
+
 
       <div className="form-group">
         <label>Email</label>
