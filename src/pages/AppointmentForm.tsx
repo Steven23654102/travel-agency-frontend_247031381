@@ -1,167 +1,159 @@
-import React, { useState } from "react";
-import { createAppointment } from "../api/appointments";
-import "../App.css"; 
-import { useNavigate } from "react-router-dom";
+// src/pages/AppointmentForm.tsx
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import {
+  Form,
+  Input,
+  Button,
+  DatePicker,
+  Select,
+  TimePicker,
+  Row,
+  Col,
+  Card,
+  message,
+} from 'antd';
+import { createAppointment } from '../api/appointments';
+import type { Appointment } from '../api/appointments';
 
+const { Option } = Select;
+
+/** 自訂驗證：HKID 格式 */
+const hkidRule = {
+  validator(_: any, value: string) {
+    if (!value || /^[A-Z]\d{6}\(\d\)$/.test(value)) return Promise.resolve();
+    return Promise.reject(new Error('請輸入有效 HKID (如 A123456(7))'));
+  },
+};
+
+/** 自訂驗證：Phone 八位數 */
+const phoneRule = {
+  validator(_: any, value: string) {
+    if (!value || /^\d{8}$/.test(value)) return Promise.resolve();
+    return Promise.reject(new Error('電話必須是 8 位數字'));
+  },
+};
 
 export default function AppointmentForm() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name_en: "",
-    name_zh: "",
-    gender: "",
-    dob: "",
-    address: "",
-    hkid: "",
-    phone: "",
-    email: "",
-    date: "",
-    time: "",
-    location: "",
-  });
+  const [submitting, setSubmitting] = useState(false);
 
-const [errors, setErrors] = useState<{ phone?: string; hkid?: string }>({});
-
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const newErrors: { phone?: string; hkid?: string } = {};
-
-  if (!/^\d{8}$/.test(formData.phone)) {
-    newErrors.phone = "電話必須是 8 位數字";
-  }
-
-  if (!/^[A-Z]\d{6}\(\d\)$/.test(formData.hkid)) {
-    newErrors.hkid = "請輸入有效的 HKID 格式（如 A123456(7)）";
-  }
-
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    return;
-  }
-
-  try {
-    const res = await createAppointment(formData);
-    alert("預約成功：" + JSON.stringify(res));
-    navigate("/appointments");
-  } catch (err) {
-    alert("預約失敗");
-  }
-};
-
-
+  /** 表單送出處理 */
+  const onFinish = async (values: Appointment) => {
+    try {
+      setSubmitting(true);
+      const res = await createAppointment(values);
+      message.success('預約成功');
+      navigate('/appointments');
+    } catch (err) {
+      message.error('預約失敗，請稍後再試');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
-    <form className="form-container" onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label>English Name</label>
-        <input
-          type="text"
-          value={formData.name_en}
-          onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
-        />
-      </div>
+    <Row justify="center" style={{ marginTop: 32 }}>
+      <Col xs={24} sm={20} md={16} lg={10}>
+        <Card title="Create Appointment" bordered>
+          <Form layout="vertical" onFinish={onFinish} autoComplete="off">
+            {/* English Name */}
+            <Form.Item
+              label="English Name"
+              name="name_en"
+              rules={[{ required: true, message: 'English name is required' }]}
+            >
+              <Input placeholder="Chan Tai Man" />
+            </Form.Item>
 
-      <div className="form-group">
-        <label>Chinese Name</label>
-        <input
-          type="text"
-          value={formData.name_zh}
-          onChange={(e) => setFormData({ ...formData, name_zh: e.target.value })}
-        />
-      </div>
+            {/* Chinese Name */}
+            <Form.Item label="Chinese Name" name="name_zh">
+              <Input placeholder="陳大文" />
+            </Form.Item>
 
-      <div className="form-group">
-        <label>Gender</label>
-        <select
-          value={formData.gender}
-          onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-        >
-          <option value="">Select Gender</option>
-          <option value="M">Male</option>
-          <option value="F">Female</option>
-        </select>
-      </div>
+            {/* Gender */}
+            <Form.Item label="Gender" name="gender">
+              <Select placeholder="Select Gender" allowClear>
+                <Option value="M">Male</Option>
+                <Option value="F">Female</Option>
+              </Select>
+            </Form.Item>
 
-      <div className="form-group">
-        <label>Date of Birth</label>
-        <input
-          type="date"
-          value={formData.dob}
-          onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-        />
-      </div>
+            {/* Date of Birth */}
+            <Form.Item label="Date of Birth" name="dob">
+              <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+            </Form.Item>
 
-      <div className="form-group">
-        <label>Address</label>
-        <input
-          type="text"
-          value={formData.address}
-          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-        />
-      </div>
+            {/* Address */}
+            <Form.Item label="Address" name="address">
+              <Input />
+            </Form.Item>
 
-      <div className="form-group">
-        <label>HKID</label>
-        <input
-          type="text"
-          value={formData.hkid}
-          onChange={(e) => setFormData({ ...formData, hkid: e.target.value })}
-        />
-        {errors.hkid && <p style={{ color: "red" }}>{errors.hkid}</p>}
-      </div>
+            {/* HKID */}
+            <Form.Item
+              label="HKID"
+              name="hkid"
+              rules={[hkidRule]}
+              tooltip="格式：A123456(7)"
+            >
+              <Input />
+            </Form.Item>
 
+            {/* Phone */}
+            <Form.Item
+              label="Phone"
+              name="phone"
+              rules={[phoneRule]}
+              tooltip="8 位數字"
+            >
+              <Input />
+            </Form.Item>
 
-      <div className="form-group">
-        <label>Phone</label>
-        <input
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-        />
-        {errors.phone && <p style={{ color: "red" }}>{errors.phone}</p>}
-      </div>
+            {/* Email */}
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                { required: true, message: 'Email is required' },
+                { type: 'email', message: 'Invalid email' },
+              ]}
+            >
+              <Input />
+            </Form.Item>
 
+            {/* Appointment Date + Time */}
+            <Row gutter={12}>
+              <Col span={12}>
+                <Form.Item label="Appointment Date" name="date">
+                  <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item label="Appointment Time" name="time">
+                  <TimePicker style={{ width: '100%' }} format="HH:mm" />
+                </Form.Item>
+              </Col>
+            </Row>
 
-      <div className="form-group">
-        <label>Email</label>
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-        />
-      </div>
+            {/* Location */}
+            <Form.Item label="Location" name="location">
+              <Input />
+            </Form.Item>
 
-      <div className="form-group">
-        <label>Appointment Date</label>
-        <input
-          type="date"
-          value={formData.date}
-          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Appointment Time</label>
-        <input
-          type="time"
-          value={formData.time}
-          onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-        />
-      </div>
-
-      <div className="form-group">
-        <label>Location</label>
-        <input
-          type="text"
-          value={formData.location}
-          onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-        />
-      </div>
-
-      <div className="form-group">
-        <button type="submit">提交預約</button>
-      </div>
-    </form>
+            {/* Submit Button */}
+            <Form.Item>
+              <Button
+                type="primary"
+                htmlType="submit"
+                block
+                loading={submitting}
+              >
+                提交預約
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
+      </Col>
+    </Row>
   );
 }

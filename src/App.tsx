@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Hotels from "./pages/Hotels";
 import HotelDetail from "./pages/HotelDetail";
 import HotelCreate from "./pages/HotelCreate";
+import HotelEdit from "./pages/HotelEdit";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/hotels" element={<Hotels />} />
         <Route path="/hotels/:id" element={<HotelDetail />} />
         <Route path="/hotels/new" element={<HotelCreate />} />
+        <Route path="/hotels/:id/edit" element={<HotelEdit />} />
       </Routes>
     </Router>
   );

@@ -1,44 +1,83 @@
+// src/pages/AppointmentList.tsx
 import React, { useEffect, useState } from "react";
-import { getAppointments } from "../api/appointments";
+import {
+  getAppointments,
+  deleteAppointment,
+  Appointment,
+} from "../api/appointments";
+import { List, message, Empty, Card, Button, Input } from "antd";
 
 export default function AppointmentList() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState(""); //  搜尋文字
+
+  const loadData = () => {
+    setLoading(true);
+    getAppointments()
+      .then((res) => setData(res))
+      .catch(() => message.error("載入預約資料失敗"))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    getAppointments()
-      .then(setData)
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+    loadData();
   }, []);
 
-  if (loading) return <p>Loading…</p>;
-  if (error)   return <p style={{ color: "red" }}>{error}</p>;
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteAppointment(id);
+      message.success("刪除成功");
+      loadData(); // 重新載入
+    } catch {
+      message.error("刪除失敗");
+    }
+  };
+
+  //  過濾後資料
+  const filteredData = data.filter(
+    (item) =>
+      item.name_en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>English Name</th>
-          <th>Email</th>
-          <th>Date</th>
-          <th>Time</th>
-          {/*  需要的欄位再加 */}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((a, idx) => (
-          <tr key={idx}>
-            <td>{idx + 1}</td>
-            <td>{a.name_en}</td>
-            <td>{a.email}</td>
-            <td>{a.date}</td>
-            <td>{a.time}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <Card title="預約列表" style={{ margin: 32 }}>
+      <Input.Search
+        placeholder="搜尋英文姓名或 Email"
+        allowClear
+        enterButton
+        onSearch={(value) => setSearchTerm(value)}
+        style={{ marginBottom: 16 }}
+      />
+
+      {filteredData.length === 0 ? (
+        <Empty description="目前尚無符合的預約資料" />
+      ) : (
+        <List
+          loading={loading}
+          itemLayout="horizontal"
+          dataSource={filteredData}
+          renderItem={(item, idx) => (
+            <List.Item
+              actions={[
+                <Button
+                  danger
+                  size="small"
+                  onClick={() => handleDelete(item.id)}
+                >
+                  刪除
+                </Button>,
+              ]}
+            >
+              <List.Item.Meta
+                title={`${idx + 1}. ${item.name_en}`}
+                description={`${item.email} ｜ ${item.date} ${item.time}`}
+              />
+            </List.Item>
+          )}
+        />
+      )}
+    </Card>
   );
 }

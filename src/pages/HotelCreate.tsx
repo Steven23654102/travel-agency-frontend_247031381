@@ -31,7 +31,7 @@ export default function HotelCreate() {
       alert("新增成功！");
       navigate("/hotels");
     } catch (err) {
-      alert("❌ 新增失敗");
+      alert("新增失敗");
     }
   };
 

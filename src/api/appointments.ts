@@ -1,5 +1,6 @@
 // src/api/appointments.ts
 export interface Appointment {
+  id: number;
   name_en: string;
   name_zh?: string;
   gender?: string;
@@ -34,4 +35,11 @@ export async function getAppointments() {
   if (!res.ok) throw new Error("Failed to fetch appointments");
   return res.json();
 }
+
+// src/api/appointments.ts
+export async function deleteAppointment(id: number) {
+  const res = await fetch(`/api/appointments/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("刪除失敗");
+}
+
 
