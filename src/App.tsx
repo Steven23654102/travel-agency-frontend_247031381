@@ -9,6 +9,8 @@ import Hotels from "./pages/Hotels";
 import HotelDetail from "./pages/HotelDetail";
 import HotelCreate from "./pages/HotelCreate";
 import HotelEdit from "./pages/HotelEdit";
+import EditAppointment from "./pages/EditAppointment";
+
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
         <Route path="/hotels/:id" element={<HotelDetail />} />
         <Route path="/hotels/new" element={<HotelCreate />} />
         <Route path="/hotels/:id/edit" element={<HotelEdit />} />
+        <Route path="/appointments/:id/edit" element={<EditAppointment />} />
       </Routes>
     </Router>
   );

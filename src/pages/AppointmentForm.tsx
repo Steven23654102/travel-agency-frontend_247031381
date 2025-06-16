@@ -13,37 +13,48 @@ import {
   Card,
   message,
 } from 'antd';
+import dayjs from 'dayjs';
 import { createAppointment } from '../api/appointments';
 import type { Appointment } from '../api/appointments';
 
 const { Option } = Select;
 
-/** 自訂驗證：HKID 格式 */
+/* ---------- 自訂驗證 ---------- */
 const hkidRule = {
-  validator(_: any, value: string) {
-    if (!value || /^[A-Z]\d{6}\(\d\)$/.test(value)) return Promise.resolve();
-    return Promise.reject(new Error('請輸入有效 HKID (如 A123456(7))'));
+  validator(_: unknown, value: string) {
+    return !value || /^[A-Z]\d{6}\(\d\)$/.test(value)
+      ? Promise.resolve()
+      : Promise.reject(new Error('請輸入有效 HKID (如 A123456(7))'));
   },
 };
 
-/** 自訂驗證：Phone 八位數 */
 const phoneRule = {
-  validator(_: any, value: string) {
-    if (!value || /^\d{8}$/.test(value)) return Promise.resolve();
-    return Promise.reject(new Error('電話必須是 8 位數字'));
+  validator(_: unknown, value: string) {
+    return !value || /^\d{8}$/.test(value)
+      ? Promise.resolve()
+      : Promise.reject(new Error('電話必須是 8 位數字'));
   },
 };
+/* -------------------------------- */
 
 export default function AppointmentForm() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
 
-  /** 表單送出處理 */
-  const onFinish = async (values: Appointment) => {
+  /* 送出表單 -------------------------------------------------------- */
+  const onFinish = async (values: any /** AntD 回傳的原始值 */) => {
+    /** 把 dayjs 轉成字串再送到後端 ---------------------------------- */
+    const payload: Appointment = {
+      ...values,
+      dob:  values.dob  ? dayjs(values.dob).format('YYYY-MM-DD') : undefined,
+      date: values.date ? dayjs(values.date).format('YYYY-MM-DD') : undefined,
+      time: values.time ? dayjs(values.time).format('HH:mm')      : undefined,
+    };
+
     try {
       setSubmitting(true);
-      const res = await createAppointment(values);
-      message.success('預約成功');
+      await createAppointment(payload);
+      message.success('預約成功！');
       navigate('/appointments');
     } catch (err) {
       message.error('預約失敗，請稍後再試');
@@ -51,6 +62,7 @@ export default function AppointmentForm() {
       setSubmitting(false);
     }
   };
+  /* ----------------------------------------------------------------- */
 
   return (
     <Row justify="center" style={{ marginTop: 32 }}>
@@ -79,7 +91,7 @@ export default function AppointmentForm() {
               </Select>
             </Form.Item>
 
-            {/* Date of Birth */}
+            {/* DOB */}
             <Form.Item label="Date of Birth" name="dob">
               <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
             </Form.Item>
@@ -121,7 +133,7 @@ export default function AppointmentForm() {
               <Input />
             </Form.Item>
 
-            {/* Appointment Date + Time */}
+            {/* Date + Time */}
             <Row gutter={12}>
               <Col span={12}>
                 <Form.Item label="Appointment Date" name="date">
@@ -140,7 +152,7 @@ export default function AppointmentForm() {
               <Input />
             </Form.Item>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <Form.Item>
               <Button
                 type="primary"

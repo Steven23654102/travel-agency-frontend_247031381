@@ -6,11 +6,13 @@ import {
   Appointment,
 } from "../api/appointments";
 import { List, message, Empty, Card, Button, Input } from "antd";
+import { useNavigate } from "react-router-dom";
 
 export default function AppointmentList() {
   const [data, setData] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); //  搜尋文字
+  const navigate = useNavigate();
 
   const loadData = () => {
     setLoading(true);
@@ -67,6 +69,13 @@ export default function AppointmentList() {
                   onClick={() => handleDelete(item.id)}
                 >
                   刪除
+                </Button>,
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={() => navigate(`/appointments/${item.id}/edit`)}
+                >
+                  編輯
                 </Button>,
               ]}
             >

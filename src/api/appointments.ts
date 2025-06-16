@@ -15,7 +15,7 @@ export interface Appointment {
 }
 
 export async function createAppointment(data: Appointment) {
-  const response = await fetch("http://localhost:3000/api/appointments", {
+  const response = await fetch("http://localhost:4000/api/appointments", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -31,15 +31,38 @@ export async function createAppointment(data: Appointment) {
 }
 
 export async function getAppointments() {
-  const res = await fetch("http://localhost:3000/api/appointments");
+  const res = await fetch("http://localhost:4000/api/appointments");
   if (!res.ok) throw new Error("Failed to fetch appointments");
   return res.json();
 }
 
 // src/api/appointments.ts
+// src/api/appointments.ts
 export async function deleteAppointment(id: number) {
-  const res = await fetch(`/api/appointments/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("刪除失敗");
+  const res = await fetch(
+    `http://localhost:4000/api/appointments/${id}`,  // ← 用反引號 & 正確主機
+    { method: 'DELETE' }
+  );
+  if (!res.ok) throw new Error('刪除失敗');
 }
 
 
+
+export async function getAppointmentById(id: number) {
+  const res = await fetch(`http://localhost:4000/api/appointments/${id}`);
+  if (!res.ok) throw new Error("無法取得資料");
+  return await res.json();
+}
+
+
+export async function updateAppointment(id: number, data: any) {
+  const res = await fetch(`http://localhost:4000/api/appointments/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("更新失敗");
+  return await res.json();
+}
